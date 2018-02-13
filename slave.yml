@@ -1,0 +1,7 @@
+---
+- name: Set up Jenkins slave server.
+  hosts: slave
+  become: yes
+  
+  roles:
+  - jenkins-slave

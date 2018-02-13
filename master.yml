@@ -1,0 +1,7 @@
+---
+- name: Set up Jenkins master server.
+  hosts: master
+  become: yes
+  
+  roles:
+  - jenkins-master
