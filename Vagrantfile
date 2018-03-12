@@ -23,5 +23,19 @@ Vagrant.configure("2") do |config|
     end
     
   end
+  
+  config.vm.define SLAVE[:hostname] do |host|
+  
+    host.vm.box = SLAVE[:box]
+    host.vm.hostname = SLAVE[:hostname]
+    host.vm.network "private_network", ip: SLAVE[:ip]
+    
+    config.vm.provision "ansible_local" do |ansible|
+      ansible.provisioning_path = "/vagrant"
+      ansible.inventory_path = "hosts"
+      ansible.playbook = "slave.yml"
+    end
+    
+  end
 
 end

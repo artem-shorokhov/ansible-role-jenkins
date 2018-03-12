@@ -1,0 +1,15 @@
+---
+
+- name: install jenkins plugins
+  jenkins_plugin:
+    name: "{{ item }}"
+    jenkins_home: "{{ jenkins_home }}"
+    params:
+      url_username: "{{ jenkins_admin_username }}"
+    url_password: "{{ jenkins_admin_password }}"
+    state: present
+    timeout: 120
+    updates_expiration: 86400
+    url: "http://{{ jenkins_hostname }}:{{ jenkins_port }}"
+  with_items: "{{ jenkins_plugins }}"
+  notify: restart jenkins

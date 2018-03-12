@@ -1,0 +1,7 @@
+- name: disable global security
+  lineinfile:
+    dest: "{{ jenkins_config_file }}"
+    regexp: '<useSecurity>.*</useSecurity>'
+    line: "<useSecurity>{{ use_global_security }}</useSecurity>"
+  register: jenkins_global_security_config
+

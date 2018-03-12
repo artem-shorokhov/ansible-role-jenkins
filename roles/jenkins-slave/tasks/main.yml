@@ -1,1 +1,38 @@
 ---
+
+- name: install java and git
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - java
+    - git
+
+- name: ensure jenkins user exists
+  user:
+    name: "{{ jenkins_user }}"
+    home: "{{ jenkins_home }}"
+    shell: /bin/bash
+    state: present
+
+- name: download jenkins slave agent.jar
+  get_url:
+    url: "http://{{ jenkins_master_ip }}:{{ jenkins_master_port }}/jnlpJars/agent.jar"
+    dest: "{{ jenkins_home }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+
+- name: copy startup.sh script
+  template:
+    src: startup.sh
+    dest: "{{ jenkins_home }}/startup.sh"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+
+- name: run jenkins slave agent
+  shell: "{{ jenkins_home }}/startup.sh"
+  become: yes
+  become_user: "{{ jenkins_user }}"
