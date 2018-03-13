@@ -1,29 +1,25 @@
 ---
 
 jenkins_hostname: localhost
-jenkins_port: 8080
 jenkins_home: /var/lib/jenkins
-jenkins_java_opts: -Djenkins.install.runSetupWizard=false
 jenkins_init_file: /etc/sysconfig/jenkins
+jenkins_java_opts: -Djenkins.install.runSetupWizard=false
 jenkins_config_file: "{{ jenkins_home }}/config.xml"
 jenkins_user: jenkins
 jenkins_group: "{{ jenkins_user }}"
-jenkins_admin_username: admin
-jenkins_admin_password: admin
+allow_anonymous_read: "true"
 
 jenkins_plugins:
-  - cloudbees-folder
-  - credentials-binding
-  - ws-cleanup
-  - workflow-aggregator
-  - github-branch-source
-  - pipeline-stage-view
+#  - cloudbees-folder
+#  - credentials-binding
+#  - ws-cleanup
+#  - workflow-aggregator
+#  - github-branch-source
+#  - pipeline-stage-view
   - git
-  - email-ext
+#  - email-ext
   - matrix-auth
 
 # slave node configuration
-jenkins_slave_name: slave
 jenkins_slave_label: "{{ jenkins_slave_name }}"
 jenkins_slave_executors: 2
-jenkins_slave_home: /var/lib/jenkins

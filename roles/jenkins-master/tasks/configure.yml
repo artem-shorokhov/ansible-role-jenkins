@@ -1,20 +1,5 @@
 ---
 
-- name: set jenkins home directory
-  lineinfile:
-    dest: "{{ jenkins_init_file }}"
-    regexp: '^JENKINS_HOME=.*'
-    line: JENKINS_HOME="{{ jenkins_home }}"
-  register: jenkins_home_config
-
-- name: ensure jenkins_home {{ jenkins_home }} exists
-  file:
-    path: "{{ jenkins_home }}"
-    state: directory
-    owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_group }}"
-    mode: 0775
-
 - name: ensure init scripts directory exists
   file:
     path: "{{ jenkins_home }}/init.groovy.d"
@@ -22,13 +7,32 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
+  when: jenkins_installation.changed
+
+- name: configure basic security
+  template:
+    src: basic-security.groovy
+    dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+  when: jenkins_installation.changed
+  register: jenkins_security_config
+
+- name: configure users
+  lineinfile:
+    dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    insertafter: 'createAccount'
+    line: "hudsonRealm.createAccount('{{ item.username }}', '{{ item.password }}')"
+  with_items: "{{ jenkins_users }}"
+  when: jenkins_installation.changed
 
 - name: set jenkins command line options
   lineinfile:
     dest: "{{ jenkins_init_file }}"
     regexp: '^JENKINS_JAVA_OPTIONS=.*'
     line: JENKINS_JAVA_OPTIONS="{{ jenkins_java_opts }}"
-  register: jenkins_java_options_config
+  register: jenkins_command_line_options
 
 - name: ensure node directory exists
   file:
@@ -45,16 +49,28 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0664
-  register: jenkins_nodes_config
+  register: jenkins_node_config
 
 - name: restart jenkins to apply changes
   service:
     name: jenkins
     state: restarted
-  when: jenkins_users_config is defined and jenkins_users_config.changed or
-        jenkins_home_config.changed or
-        jenkins_java_options_config.changed or
-        jenkins_nodes_config.changed
+  when: jenkins_security_config.changed or
+        jenkins_command_line_options.changed or
+        jenkins_node_config.changed
+
+- import_tasks: wait-for-startup.yml
+
+- name: wait for jenkins to start up
+  uri:
+    url: "http://{{ jenkins_hostname }}:{{ jenkins_port }}/cli/"
+    status_code: 200,403
+    timeout: 5
+  register: jenkins_webpage
+  retries: 60
+  delay: 5
+  until: jenkins_webpage.status == 200 or
+         jenkins_webpage.status == 403
 
 - name: remove jenkins security init scripts after first startup
   file:

@@ -1,0 +1,21 @@
+---
+
+- name: install java and git on RedHat
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - java
+    - git
+  when: ansible_os_family == 'RedHat'
+
+- name: install java and git on Debian
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - java
+    - git
+  when: ansible_os_family == 'Debian'

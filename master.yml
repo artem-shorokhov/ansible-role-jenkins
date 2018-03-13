@@ -2,6 +2,9 @@
 - name: Set up Jenkins master server.
   hosts: master
   become: yes
-  
+
+  vars_files:
+    - roles/common/defaults/main.yml
+
   roles:
   - jenkins-master

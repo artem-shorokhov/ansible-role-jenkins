@@ -1,38 +1,45 @@
 ---
 
-- name: install java and git
-  yum:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
-  with_items:
-    - java
-    - git
+- import_tasks: ../common/tasks/main.yml
+
+- debug:
+    msg: "{{ item.username }} : {{ item.password }}"
+  with_items: "{{ jenkins_users }}"
 
 - name: ensure jenkins user exists
   user:
     name: "{{ jenkins_user }}"
-    home: "{{ jenkins_home }}"
+    home: "{{ jenkins_slave_home }}"
     shell: /bin/bash
     state: present
 
 - name: download jenkins slave agent.jar
   get_url:
-    url: "http://{{ jenkins_master_ip }}:{{ jenkins_master_port }}/jnlpJars/agent.jar"
-    dest: "{{ jenkins_home }}"
+    url: "http://{{ jenkins_master_ip }}:{{ jenkins_port }}/jnlpJars/agent.jar"
+    dest: "{{ jenkins_slave_home }}"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
 
+- name: get node secret
+  uri:
+    url: "http://{{ jenkins_master_ip }}:{{ jenkins_port }}/computer/{{ jenkins_slave_name }}/"
+    method: GET
+    user: "{{ jenkins_admin_username }}"
+    password: "{{ jenkins_admin_password }}"
+    force_basic_auth: yes
+    return_content: yes
+  register: node_webpage
+  
 - name: copy startup.sh script
   template:
     src: startup.sh
-    dest: "{{ jenkins_home }}/startup.sh"
+    dest: "{{ jenkins_slave_home }}/startup.sh"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
 
 - name: run jenkins slave agent
-  shell: "{{ jenkins_home }}/startup.sh"
+  shell: "{{ jenkins_slave_home }}/startup.sh"
   become: yes
   become_user: "{{ jenkins_user }}"

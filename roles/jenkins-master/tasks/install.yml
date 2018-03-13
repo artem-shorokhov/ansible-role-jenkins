@@ -1,14 +1,5 @@
 ---
 
-- name: install java and git
-  yum:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
-  with_items:
-    - java
-    - git
-
 - name: add jenkins repository to the yum repositories
   get_url:
     url: http://pkg.jenkins-ci.org/redhat/jenkins.repo
@@ -23,7 +14,7 @@
   yum:
     name: jenkins
     state: latest
-  notify: configure default users
+  register: jenkins_installation
 
 - name: ensure jenkins is started and runs on startup
   service:

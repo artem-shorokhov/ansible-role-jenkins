@@ -2,7 +2,4 @@
 
 jenkins_user: jenkins
 jenkins_group: "{{ jenkins_user }}"
-jenkins_slave_name: slave
-jenkins_home: /var/lib/jenkins
 jenkins_master_ip: 192.168.68.11
-jenkins_master_port: 8080

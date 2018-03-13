@@ -4,24 +4,14 @@ import hudson.security.*
 import jenkins.model.*
 
 def instance = Jenkins.getInstance()
+
 def hudsonRealm = new HudsonPrivateSecurityRealm(false)
-def users = hudsonRealm.getAllUsers().collect { it.toString() }
+hudsonRealm.createAccount('{{ jenkins_admin_username }}', '{{ jenkins_admin_password }}')
 
-if ("{{ jenkins_admin_username }}" in users) {
-    println "user already exists - updating password"
+def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+strategy.setAllowAnonymousRead({{ allow_anonymous_read }})
 
-    def user = hudson.model.User.get('{{ jenkins_admin_username }}');
-    def password = hudson.security.HudsonPrivateSecurityRealm.Details.fromPlainPassword('{{ jenkins_admin_password }}')
-    user.addProperty(password)
-    user.save()
-} else {
-    println "creating user"
-
-    hudsonRealm.createAccount('{{ jenkins_admin_username }}', '{{ jenkins_admin_password }}')
-    instance.setSecurityRealm(hudsonRealm)
-
-    def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
-	strategy.setAllowAnonymousRead({{ allow_anonymous_read }})
-    instance.setAuthorizationStrategy(strategy)
-    instance.save()
-}
+instance.getDescriptor("jenkins.CLI").get().setEnabled(false)
+instance.setSecurityRealm(hudsonRealm)
+instance.setAuthorizationStrategy(strategy)
+instance.save()

@@ -1,0 +1,7 @@
+---
+
+jenkins_admin_username: admin
+jenkins_admin_password: admin
+jenkins_port: 8080
+jenkins_slave_name: slave
+jenkins_slave_home: /var/lib/jenkins

@@ -1,9 +1,9 @@
 ---
 
+- import_tasks: ../common/tasks/main.yml
+
 - import_tasks: install.yml
 
-- import_tasks: condigure.yml
-
-- import_tasks: wait-for-startup.yml
+- import_tasks: configure.yml
 
 - import_tasks: plugins.yml
