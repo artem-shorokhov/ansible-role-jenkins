@@ -9,33 +9,17 @@
     shell: /bin/bash
     state: present
 
-- name: download jenkins slave agent.jar
-  get_url:
-    url: "http://{{ jenkins_master_ip }}:{{ jenkins_port }}/jnlpJars/agent.jar"
-    dest: "{{ jenkins_slave_home }}"
-    owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_group }}"
-    mode: 0775
-
-- name: get node secret
-  uri:
-    url: "http://{{ jenkins_master_ip }}:{{ jenkins_port }}/computer/{{ jenkins_slave_name }}/"
-    method: GET
-    user: "{{ jenkins_admin_username }}"
-    password: "{{ jenkins_admin_password }}"
-    force_basic_auth: yes
-    return_content: yes
-  register: node_webpage
-  
-- name: copy startup.sh script
-  template:
-    src: startup.sh
-    dest: "{{ jenkins_slave_home }}/startup.sh"
-    owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_group }}"
-    mode: 0775
-
-- name: run jenkins slave agent
-  shell: "{{ jenkins_slave_home }}/startup.sh"
+- name: check if slave agent is running
+  shell: "pgrep -f http://{{ jenkins_master_ip }}:{{ jenkins_port }}/computer/{{ jenkins_slave_name }}/slave-agent.jnlp"
   become: yes
   become_user: "{{ jenkins_user }}"
+  register: slave_agent_pid
+  ignore_errors: yes
+  changed_when: false
+  
+- debug:
+    var: slave_agent_pid
+
+- import_tasks: run_slave_agent.yml
+  when: slave_agent_pid.stdout is defined and
+        slave_agent_pid.stdout == ""
