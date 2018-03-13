@@ -9,7 +9,7 @@
     mode: 0775
   when: jenkins_installation.changed
 
-- name: configure basic security
+- name: copy basic security init script
   template:
     src: basic-security.groovy
     dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
@@ -19,13 +19,23 @@
   when: jenkins_installation.changed
   register: jenkins_security_config
 
+- name: copy users init script
+  template:
+    src: users.groovy
+    dest: "{{ jenkins_home }}/init.groovy.d/users.groovy"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+  when: jenkins_users != ""
+
 - name: configure users
   lineinfile:
-    dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
-    insertafter: 'createAccount'
+    dest: "{{ jenkins_home }}/init.groovy.d/users.groovy"
+    insertafter: EOF
     line: "hudsonRealm.createAccount('{{ item.username }}', '{{ item.password }}')"
   with_items: "{{ jenkins_users }}"
-  when: jenkins_installation.changed
+  when: jenkins_users != ""
+  register: jenkins_users_config
 
 - name: set jenkins command line options
   lineinfile:
@@ -56,23 +66,18 @@
     name: jenkins
     state: restarted
   when: jenkins_security_config.changed or
+        jenkins_users_config.changed or
         jenkins_command_line_options.changed or
         jenkins_node_config.changed
 
 - import_tasks: wait-for-startup.yml
 
-- name: wait for jenkins to start up
-  uri:
-    url: "http://{{ jenkins_hostname }}:{{ jenkins_port }}/cli/"
-    status_code: 200,403
-    timeout: 5
-  register: jenkins_webpage
-  retries: 60
-  delay: 5
-  until: jenkins_webpage.status == 200 or
-         jenkins_webpage.status == 403
-
 - name: remove jenkins security init scripts after first startup
   file:
     path: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    state: absent
+
+- name: remove jenkins users init scripts after first startup
+  file:
+    path: "{{ jenkins_home }}/init.groovy.d/users.groovy"
     state: absent

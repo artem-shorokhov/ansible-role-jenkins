@@ -2,10 +2,6 @@
 
 - import_tasks: ../common/tasks/main.yml
 
-- debug:
-    msg: "{{ item.username }} : {{ item.password }}"
-  with_items: "{{ jenkins_users }}"
-
 - name: ensure jenkins user exists
   user:
     name: "{{ jenkins_user }}"
