@@ -1,10 +1,11 @@
-BOX    = "bento/centos-7.4"
+CENTOS = "bento/centos-7.4"
+UBUNTU = "bento/ubuntu-17.10"  
            
-MASTER = { :box => BOX,
+MASTER = { :box => CENTOS,
            :hostname => "master",
            :ip => "192.168.68.11" }
 		   
-SLAVE  = { :box => BOX,
+SLAVE  = { :box => UBUNTU,
            :hostname => "slave",
            :ip => "192.168.68.12" }
            
