@@ -16,6 +16,6 @@
     state: present
     update_cache: yes
   with_items:
-    - java
+    - default-jre
     - git
   when: ansible_os_family == 'Debian'

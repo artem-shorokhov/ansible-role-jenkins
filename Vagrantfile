@@ -5,7 +5,7 @@ MASTER = { :box => CENTOS,
            :hostname => "master",
            :ip => "192.168.68.11" }
 		   
-SLAVE  = { :box => UBUNTU,
+SLAVE  = { :box => CENTOS,
            :hostname => "slave",
            :ip => "192.168.68.12" }
            

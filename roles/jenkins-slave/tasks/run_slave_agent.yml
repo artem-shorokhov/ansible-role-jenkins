@@ -1,5 +1,12 @@
 ---
 
+- name: ensure jenkins user exists
+  user:
+    name: "{{ jenkins_user }}"
+    home: "{{ jenkins_slave_home }}"
+    shell: /bin/bash
+    state: present
+
 - name: ensure jenkins slave agent is in place
   get_url:
     url: "http://{{ jenkins_master_ip }}:{{ jenkins_port }}/jnlpJars/agent.jar"
@@ -7,19 +14,6 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
-
-- name: get node secret
-  uri:
-    url: "http://{{ jenkins_master_ip }}:{{ jenkins_port }}/computer/{{ jenkins_slave_name }}/"
-    method: GET
-    user: "{{ jenkins_admin_username }}"
-    password: "{{ jenkins_admin_password }}"
-    force_basic_auth: yes
-    return_content: yes
-  register: node_webpage
-
-- debug:
-    msg: "{{ node_webpage.content | regex_search('-secret\\s[a-zA-Z0-9]+')}}"
 
 - name: ensure startup.sh script is in place
   template:

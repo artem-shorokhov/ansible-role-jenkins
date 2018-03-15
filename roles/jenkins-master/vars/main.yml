@@ -2,6 +2,5 @@
 
 allow_anonymous_read: "false"
 
-jenkins_users:
+jenkins_users: ""
 #  - { username: 'developer', password: 'd3v3l0p3r' }
-#  - { username: 'tester',    password: 't3st3r' }

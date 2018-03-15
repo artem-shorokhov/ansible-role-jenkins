@@ -1,25 +1,17 @@
 ---
 
-- import_tasks: ../common/tasks/main.yml
+- name: get slave node secret
+  uri:
+    url: "http://{{ jenkins_master_ip }}:{{ jenkins_port }}/computer/{{ jenkins_slave_name }}/"
+    method: GET
+    user: "{{ jenkins_admin_username }}"
+    password: "{{ jenkins_admin_password }}"
+    force_basic_auth: yes
+    return_content: yes
+  register: webpage
 
-- name: ensure jenkins user exists
-  user:
-    name: "{{ jenkins_user }}"
-    home: "{{ jenkins_slave_home }}"
-    shell: /bin/bash
-    state: present
-
-- name: check if slave agent is running
-  shell: "pgrep -f http://{{ jenkins_master_ip }}:{{ jenkins_port }}/computer/{{ jenkins_slave_name }}/slave-agent.jnlp"
-  become: yes
-  become_user: "{{ jenkins_user }}"
-  register: slave_agent_pid
-  ignore_errors: yes
-  changed_when: false
+- import_tasks: ../common/tasks/dependencies.yml
+  when: "'secret' in webpage.content"
   
-- debug:
-    var: slave_agent_pid
-
 - import_tasks: run_slave_agent.yml
-  when: slave_agent_pid.stdout is defined and
-        slave_agent_pid.stdout == ""
+  when: "'secret' in webpage.content"

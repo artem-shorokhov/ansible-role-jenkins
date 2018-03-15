@@ -1,6 +1,6 @@
 ---
 
-- import_tasks: ../common/tasks/main.yml
+- import_tasks: ../common/tasks/dependencies.yml
 
 - import_tasks: install.yml
 
