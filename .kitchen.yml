@@ -1,0 +1,34 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: ansible_playbook
+  ansible_inventory: ./hosts
+  ansible_sudo: true
+#  ansible_verbose: true
+#  ansible_verbosity: 2
+  playbook: master.yml
+  roles_path: ./roles/
+
+verifier: 
+  name: inspec
+
+platforms:
+  - name: master
+    driver_plugin: vagrant
+    driver_config:
+      box: bento/centos-7.4
+      network:
+      - ['private_network', {ip: '192.168.68.11'}]
+
+suites:
+  - name: jenkins
+    verifier:
+      inspec_tests:
+        - test
+
+# Workaround to avoid 'SCP upload failed (open failed (1))'.
+transport:
+  max_ssh_sessions: 6
+  

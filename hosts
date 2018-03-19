@@ -1,4 +1,3 @@
-# Group of a lonely server.
 [servers]
 master ansible_connection=local
 slave  ansible_connection=local

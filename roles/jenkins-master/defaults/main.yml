@@ -10,14 +10,14 @@ jenkins_group: "{{ jenkins_user }}"
 allow_anonymous_read: "true"
 
 jenkins_plugins:
-#  - cloudbees-folder
-#  - credentials-binding
-#  - ws-cleanup
-#  - workflow-aggregator
-#  - github-branch-source
-#  - pipeline-stage-view
+  - cloudbees-folder
+  - credentials-binding
+  - ws-cleanup
+  - workflow-aggregator
+  - github-branch-source
+  - pipeline-stage-view
   - git
-#  - email-ext
+  - email-ext
   - matrix-auth
 
 # slave node configuration
