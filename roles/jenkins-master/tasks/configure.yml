@@ -12,7 +12,7 @@
 - name: copy basic security init script
   template:
     src: basic-security.groovy
-    dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    path: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
@@ -22,7 +22,7 @@
 - name: copy users init script
   template:
     src: users.groovy
-    dest: "{{ jenkins_home }}/init.groovy.d/users.groovy"
+    path: "{{ jenkins_home }}/init.groovy.d/users.groovy"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
@@ -30,7 +30,7 @@
 
 - name: configure users
   lineinfile:
-    dest: "{{ jenkins_home }}/init.groovy.d/users.groovy"
+    path: "{{ jenkins_home }}/init.groovy.d/users.groovy"
     insertafter: EOF
     line: "hudsonRealm.createAccount('{{ item.username }}', '{{ item.password }}')"
   with_items: "{{ jenkins_users }}"
@@ -39,7 +39,7 @@
 
 - name: set jenkins command line options
   lineinfile:
-    dest: "{{ jenkins_init_file }}"
+    path: "{{ jenkins_init_file }}"
     regexp: '^JENKINS_JAVA_OPTIONS=.*'
     line: JENKINS_JAVA_OPTIONS="{{ jenkins_java_opts }}"
   register: jenkins_command_line_options
@@ -55,7 +55,7 @@
 - name: configure {{ jenkins_slave_name }} node
   template:
     src: config.xml
-    dest: "{{ jenkins_home }}/nodes/{{ jenkins_slave_name }}/config.xml"
+    path: "{{ jenkins_home }}/nodes/{{ jenkins_slave_name }}/config.xml"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0664

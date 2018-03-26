@@ -38,7 +38,7 @@ end
 
 control 'port-is-open' do
   impact 1.0
-  title 'Jenkins service should be installed/enabled/running.'
+  title 'Jenkins should be listening on port 8080.'
   describe port(8080) do
     it { should be_listening }
     its('processes') { should include 'java' }
