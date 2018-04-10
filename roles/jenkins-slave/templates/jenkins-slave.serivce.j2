@@ -1,0 +1,11 @@
+[Unit]
+Description = Jenkins slave service
+After = network.target
+
+[Service]
+Type = forking
+ExecStart = {{ jenkins_slave_home }}/startup.sh
+User = {{ jenkins_user }}
+
+[Install]
+WantedBy = default.target

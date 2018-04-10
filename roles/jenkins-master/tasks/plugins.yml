@@ -4,8 +4,7 @@
   jenkins_plugin:
     name: "{{ item }}"
     jenkins_home: "{{ jenkins_home }}"
-    params:
-      url_username: "{{ jenkins_admin_username }}"
+    url_username: "{{ jenkins_admin_username }}"
     url_password: "{{ jenkins_admin_password }}"
     state: present
     timeout: 120

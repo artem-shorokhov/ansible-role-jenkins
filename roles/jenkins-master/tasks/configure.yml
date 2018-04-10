@@ -12,7 +12,7 @@
 - name: copy basic security init script
   template:
     src: basic-security.groovy
-    path: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
@@ -22,7 +22,7 @@
 - name: copy users init script
   template:
     src: users.groovy
-    path: "{{ jenkins_home }}/init.groovy.d/users.groovy"
+    dest: "{{ jenkins_home }}/init.groovy.d/users.groovy"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
@@ -51,11 +51,11 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
-  
+
 - name: configure {{ jenkins_slave_name }} node
   template:
     src: config.xml
-    path: "{{ jenkins_home }}/nodes/{{ jenkins_slave_name }}/config.xml"
+    dest: "{{ jenkins_home }}/nodes/{{ jenkins_slave_name }}/config.xml"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0664

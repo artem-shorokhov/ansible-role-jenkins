@@ -17,13 +17,24 @@
 
 - name: ensure startup.sh script is in place
   template:
-    src: startup.sh
+    src: startup.sh.j2
     dest: "{{ jenkins_slave_home }}/startup.sh"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
 
-- name: run jenkins slave agent
-  shell: "{{ jenkins_slave_home }}/startup.sh"
-  become: yes
-  become_user: "{{ jenkins_user }}"
+- name: ensure service file is in place
+  template:
+    src: jenkins-slave.serivce.j2
+    dest: "/etc/systemd/system/{{ jenkins_slave_service_name }}.service"
+    mode: 0644
+
+- name: force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: ensure jenkins slave service is enabled and running
+  service:
+    name: "{{ jenkins_slave_service_name }}"
+    state: started
+    enabled: yes
